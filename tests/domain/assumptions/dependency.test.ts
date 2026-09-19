@@ -1,0 +1,2 @@
+import { expect,it } from "vitest"; import { DependencyGraph } from "../../../packages/domain/assumptions/src/index.js";
+it("invalidates only transitive dependants",()=>{const g=new DependencyGraph();for(const [a,b] of [["A01","C01"],["C01","C03"],["A01","C02"],["A02","C04"]])g.addDependency({fromNodeId:a as never,toNodeId:b as never,type:"DEPENDS_ON"});expect(g.invalidateFrom("A01")).toEqual(expect.arrayContaining(["C01","C02","C03"]));expect(g.invalidateFrom("A01")).not.toContain("C04");});

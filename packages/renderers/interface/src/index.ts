@@ -1,0 +1,4 @@
+import type { ReconstructionSpec } from "@apocrypha/reconstruction";
+export type RenderJob={id:string;status:"QUEUED"|"COMPLETED"|"FAILED";manifestHash:string}; export type RenderOutput={job:RenderJob;path:string}; export interface RendererAdapter{capabilities():string[];renderImage(spec:ReconstructionSpec):Promise<RenderOutput>;}
+export class RendererRegistry { constructor(private readonly adapters:RendererAdapter[]){} resolve(capability:string){const adapter=this.adapters.find(a=>a.capabilities().includes(capability));if(!adapter)throw new Error(`Unsupported capability: ${capability}`);return adapter;}}
+export class MockRendererAdapter implements RendererAdapter {capabilities(){return ["IMAGE_FAST_DRAFT","IMAGE_MULTI_REFERENCE"]} async renderImage(spec:ReconstructionSpec){return {job:{id:`mock_${spec.reconstructionId}`,status:"COMPLETED" as const,manifestHash:spec.canonicalHash},path:`mock://${spec.reconstructionId}.png`}}}

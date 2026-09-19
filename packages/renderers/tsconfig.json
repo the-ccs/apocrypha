@@ -1,5 +1,6 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": { "composite": true, "rootDir": "src", "outDir": "dist" },
-  "include": ["src/**/*.ts"]
+  "compilerOptions": { "composite": true, "rootDir": ".", "outDir": "dist" },
+  "references": [{ "path": "../reconstruction" }],
+  "include": ["src/**/*.ts", "interface/src/**/*.ts"]
 }

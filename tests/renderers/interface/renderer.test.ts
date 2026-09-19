@@ -1,0 +1,2 @@
+import { expect,it } from "vitest"; import { MockRendererAdapter,RendererRegistry } from "../../../packages/renderers/interface/src/index.js";
+it("resolves abstract image capabilities and mock renders",async()=>{const r=new RendererRegistry([new MockRendererAdapter()]);expect(r.resolve("IMAGE_FAST_DRAFT")).toBeInstanceOf(MockRendererAdapter);expect(()=>r.resolve("SCENE_3D")).toThrow(/Unsupported/);const out=await r.resolve("IMAGE_MULTI_REFERENCE").renderImage({reconstructionId:"rec_1",canonicalHash:"a"} as never);expect(out.job.manifestHash).toBe("a");});

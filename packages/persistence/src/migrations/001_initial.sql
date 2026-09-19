@@ -1,0 +1,16 @@
+PRAGMA foreign_keys = ON;
+CREATE TABLE IF NOT EXISTS migrations (id TEXT PRIMARY KEY, applied_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS projects (id TEXT PRIMARY KEY, json TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS source_artifacts (id TEXT PRIMARY KEY, project_id TEXT NOT NULL, sha256 TEXT NOT NULL, json TEXT NOT NULL, UNIQUE(project_id, sha256));
+CREATE INDEX IF NOT EXISTS idx_source_artifacts_sha256 ON source_artifacts(sha256);
+CREATE TABLE IF NOT EXISTS evidence_items (id TEXT PRIMARY KEY, source_artifact_id TEXT NOT NULL REFERENCES source_artifacts(id), json TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS observations (id TEXT PRIMARY KEY, json TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS claims (id TEXT PRIMARY KEY, json TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS claim_relations (id TEXT PRIMARY KEY, json TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS assumptions (id TEXT PRIMARY KEY, json TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS dependency_edges (from_node_id TEXT NOT NULL, to_node_id TEXT NOT NULL, json TEXT NOT NULL, PRIMARY KEY(from_node_id,to_node_id));
+CREATE TABLE IF NOT EXISTS hypotheses (id TEXT PRIMARY KEY, json TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS worlds (id TEXT PRIMARY KEY, hypothesis_id TEXT NOT NULL REFERENCES hypotheses(id), revision INTEGER NOT NULL, json TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS disputes (id TEXT PRIMARY KEY, json TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS reconstruction_specs (id TEXT PRIMARY KEY, json TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS render_manifests (reconstruction_id TEXT PRIMARY KEY, json TEXT NOT NULL);

@@ -1,1 +1,2 @@
-export {};
+export type ProvenancePath = { targetId:string; claimId?:string; observationId?:string; evidenceItemId?:string; sourceArtifactId?:string; assumptionId?:string; terminal:"SOURCE_ARTIFACT"|"ASSUMPTION"|"UNKNOWN"|"GENERATIVE_FILL" };
+export class ProvenanceEngine { constructor(private readonly links:Map<string,ProvenancePath[]>) {} whyIsThisHere(id:string){return this.links.get(id)??[];} whatSupports(id:string){return this.whyIsThisHere(id).filter(p=>p.terminal==="SOURCE_ARTIFACT");} whatContradicts(id:string){return this.whyIsThisHere(id).filter(p=>p.terminal==="UNKNOWN");} whatAssumptions(id:string){return this.whyIsThisHere(id).filter(p=>p.assumptionId);}}
