@@ -1,0 +1,11 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/domain" },
+    { "path": "./packages/provenance" },
+    { "path": "./packages/reconstruction" },
+    { "path": "./packages/renderers" },
+    { "path": "./packages/persistence" },
+    { "path": "./apps/web" }
+  ]
+}
