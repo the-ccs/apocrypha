@@ -1141,6 +1141,107 @@ They exist only to aid rendering.
 
 ---
 
+# 28A. ReconstructionRelationship
+
+`ReconstructionRelationship` is the renderer-neutral compiled representation of a relationship present in the World Graph.
+
+It preserves the identity and epistemic provenance of the source `WorldRelationship`.
+
+```ts
+type ReconstructionRelationship = {
+  relationshipId: WorldRelationshipId;
+
+  subjectEntityId: EntityId;
+  predicate: string;
+  objectEntityId: EntityId;
+
+  epistemicClass: EpistemicClass;
+
+  claimIds: ClaimId[];
+  assumptionIds: AssumptionId[];
+};
+```
+
+Rules:
+
+- `relationshipId` preserves the identity of the originating `WorldRelationship`.
+- `subjectEntityId` and `objectEntityId` must reference entities contained in the compiled reconstruction.
+- `predicate` must be a non-empty string.
+- `epistemicClass` uses the canonical APOCRYPHA epistemic classes.
+- `claimIds` and `assumptionIds` preserve upstream provenance dependencies.
+- Duplicate IDs are not permitted within `claimIds` or `assumptionIds`.
+- A reconstruction relationship does not create new evidential authority.
+- A `GENERATIVE_FILL` relationship must not claim evidential support that does not exist in the World Graph.
+- Renderer-specific information must not be added to this structure.
+
+`ReconstructionRelationship` is derived from world state.
+
+Renderers consume it.
+
+Renderers do not create or mutate it.
+
+---
+
+# 28B. ProvenanceRef
+
+`ProvenanceRef` is a compact renderer-independent reference to provenance information associated with a reconstructed entity, property, or relationship.
+
+It does not replace the Provenance Engine or encode the complete provenance graph.
+
+```ts
+type ProvenanceRef =
+  | {
+      type: "CLAIM";
+      id: ClaimId;
+    }
+  | {
+      type: "OBSERVATION";
+      id: ObservationId;
+    }
+  | {
+      type: "EVIDENCE_ITEM";
+      id: EvidenceItemId;
+    }
+  | {
+      type: "SOURCE_ARTIFACT";
+      id: SourceArtifactId;
+    }
+  | {
+      type: "ASSUMPTION";
+      id: AssumptionId;
+    }
+  | {
+      type: "UNKNOWN";
+      reason?: string;
+    }
+  | {
+      type: "GENERATIVE_FILL";
+      reason?: string;
+    };
+```
+
+Rules:
+
+- `ProvenanceRef` is a discriminated union using `type`.
+- References to graph objects must contain the correctly typed stable ID.
+- `UNKNOWN` and `GENERATIVE_FILL` do not contain graph-node IDs unless such a node type is explicitly introduced by a later specification.
+- `UNKNOWN` means the reconstruction contains explicit unresolved state.
+- `GENERATIVE_FILL` means the referenced reconstruction detail exists solely to make representation/rendering possible.
+- `GENERATIVE_FILL` must never reference generated output as evidential support.
+- A flat `ProvenanceRef[]` is an index of relevant provenance nodes, not a substitute for ordered provenance paths.
+- Full ancestry remains the responsibility of the Provenance Engine.
+- Provenance references must never be interpreted as probability or confidence values.
+
+The `ReconstructionSpec.provenanceIndex` therefore remains:
+
+```ts
+provenanceIndex: Record<string, ProvenanceRef[]>;
+```
+
+The record key identifies the reconstruction entity, property, or relationship whose provenance is being indexed.
+
+The exact key-generation convention belongs to the Reconstruction Compiler implementation and must be deterministic.
+
 # 29. Rendering policy
 
 ```ts
